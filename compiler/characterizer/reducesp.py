@@ -3,7 +3,6 @@ import globals
 OPTS = globals.get_opts()
 
 def trim(Dvar, word_size):
-
 	# copy the contents of temp.sp into a new file the will afterward be reduced
 	tempsp = "{0}temp.sp".format(OPTS.openram_temp)
 	resp = "{0}reduced.sp".format(OPTS.openram_temp)
@@ -320,8 +319,8 @@ def trim(Dvar, word_size):
 		################################
 		# trimming headers in test bank
 		################################
-		elif ".SUBCKT test_bank" in line:
-			TBK_flag = 1			
+		elif ".SUBCKT bank" in line:
+			TBK_flag = 1
 			re_spfile.write(line)
 		elif (".ENDS" in line) and (TBK_flag == 1):
 			TBK_flag = 0
