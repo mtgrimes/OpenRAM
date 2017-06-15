@@ -7,6 +7,7 @@ import math
 import stimuli
 import charutils as ch
 import utils
+import reducesp
 
 OPTS = globals.get_opts()
 
@@ -22,7 +23,13 @@ class delay():
         self.word_size = sram.word_size
         self.addr_size = sram.addr_size
         self.sram_sp_file = spfile
+        self.mode = "full"
 
+    def reduction_mode(self, mode):
+        if mode == "full":
+            self.mode = "full"
+        if mode == "reduce":
+            self.mode = "reduce"
 
     def check_arguments(self):
         """Checks if arguments given for write_stimulus() meets requirements"""
@@ -57,8 +64,14 @@ class delay():
 
         # include files in stimulus file
         model_list = tech.spice["fet_models"] + [self.sram_sp_file]
+        if self.mode == "reduce":
+	    model_list[2] = "{}reduced.sp".format(OPTS.openram_temp)
         stimuli.write_include(stim_file=self.sf, models=model_list)
         self.sf.write("\n")
+
+        # RUNLVL = 1 fast / RUNLVL = 6 accurate / RUNLVL = 3 default
+	if OPTS.spice_version=="hspice":
+	    self.sf.write(".option RUNLVL = 3\n\n")
 
         # add vdd/gnd statements
         self.sf.write("* Global Power Supplies\n")
@@ -212,6 +225,9 @@ class delay():
 
         self.sf.close()
 
+        if self.mode == "reduce":
+            reducesp.trim(self.word_size-1,self.word_size)
+
     def write_clock(self):
         # generate clk PWL based on the clock periods
         self.sf.write("* Generation of global clock signal\n")
@@ -279,7 +295,7 @@ class delay():
         starting point. """
 
         feasible_period = initial_period
-        time_out = 8
+        time_out = 12
         while True:
             debug.info(1, "Finding feasible period: {0}ns".format(feasible_period))
             time_out -= 1
