@@ -65,6 +65,7 @@ class delay():
         # include files in stimulus file
         model_list = tech.spice["fet_models"] + [self.sram_sp_file]
         if self.mode == "reduce":
+            path =  model_list[2]
 	    model_list[2] = "{}reduced.sp".format(OPTS.openram_temp)
         stimuli.write_include(stim_file=self.sf, models=model_list)
         self.sf.write("\n")
@@ -226,7 +227,7 @@ class delay():
         self.sf.close()
 
         if self.mode == "reduce":
-            reducesp.trim(self.word_size-1,self.word_size)
+            reducesp.trim(self.word_size-1,self.word_size,path)
 
     def write_clock(self):
         # generate clk PWL based on the clock periods

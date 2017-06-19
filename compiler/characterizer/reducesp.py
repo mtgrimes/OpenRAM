@@ -2,11 +2,10 @@ import globals
 
 OPTS = globals.get_opts()
 
-def trim(Dvar, word_size):
+def trim(Dvar, word_size, path):
 	# copy the contents of temp.sp into a new file the will afterward be reduced
-	tempsp = "{0}temp.sp".format(OPTS.openram_temp)
 	resp = "{0}reduced.sp".format(OPTS.openram_temp)
-	spfile = open(tempsp, "r")
+	spfile = open(path, "r")
 	re_spfile = open(resp, "w")
 
 	BCA_flag = 0	# Bit Cell Array
